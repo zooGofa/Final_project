@@ -25,12 +25,12 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 	// Получаем список задач из базы данных (максимум 50)
 	tasks, err := db.Tasks(50, search)
 	if err != nil {
-		writeJson(w, map[string]string{"error": err.Error()})
+		writeJson(w, map[string]string{"error": err.Error()}, errorStatus(err))
 		return
 	}
 
 	// Возвращаем список задач в JSON формате
 	writeJson(w, TasksResp{
 		Tasks: tasks,
-	})
+	}, http.StatusOK)
 }

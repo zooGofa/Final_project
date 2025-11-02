@@ -22,12 +22,12 @@ func AddTask(task *Task) (int64, error) {
 	query := `INSERT INTO scheduler (date, title, comment, repeat) VALUES (?, ?, ?, ?)`
 	res, err := DB.Exec(query, task.Date, task.Title, task.Comment, task.Repeat)
 	if err != nil {
-		return 0, fmt.Errorf("ошибка при добавлении задачи: %v", err)
+		return 0, fmt.Errorf("ошибка при добавлении задачи: %w", err)
 	}
 
 	id, err = res.LastInsertId()
 	if err != nil {
-		return 0, fmt.Errorf("ошибка при получении ID задачи: %v", err)
+		return 0, fmt.Errorf("ошибка при получении ID задачи: %w", err)
 	}
 
 	return id, nil
@@ -50,7 +50,7 @@ func Tasks(limit int, search string) ([]*Task, error) {
 			// Поиск по дате
 			dateStr, err := convertDateFormat(search)
 			if err != nil {
-				return nil, fmt.Errorf("некорректный формат даты: %v", err)
+				return nil, fmt.Errorf("некорректный формат даты: %w", err)
 			}
 			query = `SELECT id, date, title, comment, repeat FROM scheduler WHERE date = ? ORDER BY date ASC LIMIT ?`
 			args = []interface{}{dateStr, limit}
@@ -64,7 +64,7 @@ func Tasks(limit int, search string) ([]*Task, error) {
 
 	rows, err := DB.Query(query, args...)
 	if err != nil {
-		return nil, fmt.Errorf("ошибка при получении списка задач: %v", err)
+		return nil, fmt.Errorf("ошибка при получении списка задач: %w", err)
 	}
 	defer rows.Close()
 
@@ -75,7 +75,7 @@ func Tasks(limit int, search string) ([]*Task, error) {
 
 		err := rows.Scan(&id, &task.Date, &task.Title, &task.Comment, &task.Repeat)
 		if err != nil {
-			return nil, fmt.Errorf("ошибка при сканировании задачи: %v", err)
+			return nil, fmt.Errorf("ошибка при сканировании задачи: %w", err)
 		}
 
 		task.ID = strconv.FormatInt(id, 10)
@@ -83,7 +83,7 @@ func Tasks(limit int, search string) ([]*Task, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("ошибка при обработке результатов: %v", err)
+		return nil, fmt.Errorf("ошибка при обработке результатов: %w", err)
 	}
 
 	// Если задач нет, возвращаем пустой слайс вместо nil
@@ -131,12 +131,12 @@ func UpdateTask(task *Task) error {
 
 	res, err := DB.Exec(query, task.Date, task.Title, task.Comment, task.Repeat, task.ID)
 	if err != nil {
-		return fmt.Errorf("ошибка при обновлении задачи: %v", err)
+		return fmt.Errorf("ошибка при обновлении задачи: %w", err)
 	}
 
 	count, err := res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("ошибка при проверке количества обновленных записей: %v", err)
+		return fmt.Errorf("ошибка при проверке количества обновленных записей: %w", err)
 	}
 
 	if count == 0 {
@@ -152,12 +152,12 @@ func DeleteTask(id string) error {
 
 	res, err := DB.Exec(query, id)
 	if err != nil {
-		return fmt.Errorf("ошибка при удалении задачи: %v", err)
+		return fmt.Errorf("ошибка при удалении задачи: %w", err)
 	}
 
 	count, err := res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("ошибка при проверке количества удаленных записей: %v", err)
+		return fmt.Errorf("ошибка при проверке количества удаленных записей: %w", err)
 	}
 
 	if count == 0 {
@@ -173,12 +173,12 @@ func UpdateDate(next string, id string) error {
 
 	res, err := DB.Exec(query, next, id)
 	if err != nil {
-		return fmt.Errorf("ошибка при обновлении даты задачи: %v", err)
+		return fmt.Errorf("ошибка при обновлении даты задачи: %w", err)
 	}
 
 	count, err := res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("ошибка при проверке количества обновленных записей: %v", err)
+		return fmt.Errorf("ошибка при проверке количества обновленных записей: %w", err)
 	}
 
 	if count == 0 {

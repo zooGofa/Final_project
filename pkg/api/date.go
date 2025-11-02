@@ -36,7 +36,7 @@ func checkDate(task *db.Task) error {
 			// Если есть правило повторения, вычисляем следующую дату
 			next, err := nextdate.NextDate(now, task.Date, task.Repeat)
 			if err != nil {
-				return fmt.Errorf("правило повторения указано в неправильном формате: %v", err)
+				return fmt.Errorf("правило повторения указано в неправильном формате: %w", err)
 			}
 			task.Date = next
 		}
